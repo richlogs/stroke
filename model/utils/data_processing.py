@@ -9,28 +9,6 @@ def encode_categories(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-# def train_test_split_old(df: pd.DataFrame, outcome_var: str, train_size: float = 0.7, stratify: bool = True, random_seed: int = 42) -> pd.DataFrame:
-#     np.random.seed(random_seed)  # Set random seed for reproducibility
-
-#     if stratify:
-#         def add_random_uniform(group):
-#             group['random'] = np.random.uniform(size=len(group))
-#             return group
-
-#         df = df.groupby(outcome_var).apply(add_random_uniform)
-#         df = df.reset_index()
-#     else:
-#         df["random"] = np.random.uniform(high=1, size=len(df))
-
-#     df.sort_values(by='random', inplace=True)
-#     df.drop(columns='random', inplace=True)
-
-#     split_index = int(train_size * len(df))
-#     df_train, df_test = df.iloc[:split_index], df.iloc[split_index:]
-
-#     return df_train, df_test
-
-
 def train_test_split(
     df, stratify_col=None, test_size=0.2, random_state=None, stratify=True
 ):
