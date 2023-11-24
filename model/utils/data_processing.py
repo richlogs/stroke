@@ -40,7 +40,9 @@ def train_test_split(
     return train, test
 
 
-def test_cases(df: pd.DataFrame, col: str, iterations: int, stratify_col="stroke"):
+def training_split_tests(
+    df: pd.DataFrame, col: str, iterations: int, stratify_col="stroke"
+):
     """
     Test the proportions of a specific column in the train and test sets, with and without stratification.
 
@@ -72,4 +74,4 @@ def test_cases(df: pd.DataFrame, col: str, iterations: int, stratify_col="stroke
 
 if __name__ == "__main__":
     data = pd.read_csv("data/stroke.csv", delimiter=",")
-    test_cases(data, "stroke", 1000)
+    training_split_tests(data, "stroke", 1000)
