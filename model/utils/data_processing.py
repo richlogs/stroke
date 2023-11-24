@@ -40,36 +40,34 @@ def train_test_split(
     return train, test
 
 
-def test_cases(df: pd.DataFrame, col: str, iterations: int):
-    train_list_stratify = []
-    test_list_stratify = []
-    train_list = []
-    test_list = []
+def test_cases(df: pd.DataFrame, col: str, iterations: int, stratify_col="stroke"):
+    """
+    Test the proportions of a specific column in the train and test sets, with and without stratification.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to sample from.
+    col (str): The column to calculate proportions for.
+    iterations (int): The number of iterations to perform.
+    stratify_col (str): The column to use for stratification.
+
+    Prints:
+    Mean and standard deviation of the proportions in the train and test sets, with and without stratification.
+    """
+    results = {"train_stratify": [], "test_stratify": [], "train": [], "test": []}
 
     for i in range(iterations):
-        # train_stratify, test_stratify =  train_test_split_old(df, "stroke", stratify=True, random_seed=i)
-        train_stratify, test_stratify = train_test_split(df, "stroke", stratify=True)
-        train_prop_stratify = train_stratify[col].sum() / len(train_stratify)
-        test_prop_stratify = test_stratify[col].sum() / len(test_stratify)
-        train_list_stratify.append(train_prop_stratify)
-        test_list_stratify.append(test_prop_stratify)
+        for stratify in [True, False]:
+            train, test = train_test_split(
+                df, stratify_col, stratify=stratify, random_state=i
+            )
+            results["train" + ("_stratify" if stratify else "")].append(
+                train[col].mean()
+            )
+            results["test" + ("_stratify" if stratify else "")].append(test[col].mean())
 
-    for i in range(iterations):
-        # train, test =  train_test_split_old(df, "stroke", stratify=False, random_seed=i)
-        train, test = train_test_split(df, stratify=False)
-        train_prop = train[col].sum() / len(train)
-        test_prop = test[col].sum() / len(test)
-        train_list.append(train_prop)
-        test_list.append(test_prop)
-
-    print(f"mean train prop stratify: {round(np.mean(train_list_stratify), 6)}")
-    print(f"mean train prop:          {round(np.mean(train_list), 6)}")
-    print(f"mean test prop stratify:  {round(np.mean(test_list_stratify), 6)}")
-    print(f"mean test prop:           {round(np.mean(test_list), 6)}")
-    print(f"std train prop stratify:  {round(np.std(train_list_stratify), 6)}")
-    print(f"std train prop:           {round(np.std(train_list), 6)}")
-    print(f"std test prop stratify:   {round(np.std(test_list_stratify), 6)}")
-    print(f"std test prop:            {round(np.std(test_list), 6)}")
+    for key, values in results.items():
+        print(f"mean {key} prop: {round(np.mean(values), 6)}")
+        print(f"std {key} prop: {round(np.std(values), 6)}")
 
 
 if __name__ == "__main__":
