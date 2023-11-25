@@ -1,7 +1,7 @@
 import pandas as pd
 
-from utils.data_processing import mode_impute
 from utils.data_processing import one_hot_encode
+from utils.imputation import mode_impute
 
 
 data = pd.read_csv("data/stroke.csv", delimiter=",")
