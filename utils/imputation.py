@@ -42,3 +42,25 @@ def mean_impute(df: pd.DataFrame, col: str) -> pd.DataFrame:
 
     df[col].fillna(mean, inplace=True)
     return df
+
+
+def median_impute(df: pd.DataFrame, col: str) -> pd.DataFrame:
+    """
+    Impute missing values in a column with the median.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame to impute.
+    col (str): The column to impute.
+
+    Returns:
+    pandas.DataFrame: The imputed DataFrame.
+    """
+    assert df[col].dtype in ["float64", "int64"], "Column must be numeric."
+
+    median = df[col].median()
+
+    if df[col].dtype == "int64":
+        median = int(median)
+
+    df[col].fillna(median, inplace=True)
+    return df
