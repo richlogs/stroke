@@ -12,4 +12,4 @@ print(data["smoking_status"].value_counts())
 
 one_hot = one_hot_encode(data)
 x = 3
-## We need to impute 201 missing values in the bmi column and 4 missing values in the smoking_status column.
+## We need to impute 201 missing values in the bmi column and 1544 missing values in the smoking_status column.
