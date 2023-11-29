@@ -24,10 +24,10 @@ one_hot = one_hot_encode(data, drop_first=False)
 train, test = train_test_split(
     one_hot, stratify_col="stroke", stratify=True, random_state=seed
 )
-X_train = train.iloc[:, :-1]
-y_train = train.iloc[:, -1]
-X_test = test.iloc[:, :-1]
-y_test = test.iloc[:, -1]
+X_train = train.drop("stroke", axis=1)
+y_train = train["stroke"]
+X_test = test.drop("stroke", axis=1)
+y_test = test["stroke"]
 
 ## Build Classifier
 clf = DecisionTreeClassifier(random_state=seed)
