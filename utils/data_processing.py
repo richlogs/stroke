@@ -18,7 +18,7 @@ def encode_categories(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def one_hot_encode(df: pd.DataFrame) -> pd.DataFrame:
+def one_hot_encode(df: pd.DataFrame, drop_first: bool = True) -> pd.DataFrame:
     """
     One-hot encode categorical columns of a DataFrame.
 
@@ -28,7 +28,7 @@ def one_hot_encode(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
     pandas.DataFrame: The encoded DataFrame.
     """
-    return pd.get_dummies(df, drop_first=True, dtype=int)
+    return pd.get_dummies(df, drop_first=drop_first, dtype=int)
 
 
 def train_test_split(
