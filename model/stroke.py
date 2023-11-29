@@ -1,9 +1,12 @@
 import pandas as pd
+from sklearn.metrics import average_precision_score
 from sklearn.tree import DecisionTreeClassifier
 
 from utils.data_processing import one_hot_encode
 from utils.data_processing import train_test_split
 from utils.imputation import mode_impute
+
+seed = 42
 
 ## Read data
 data = pd.read_csv("data/stroke.csv", delimiter=",")
@@ -14,20 +17,28 @@ data = mode_impute(data, "smoking_status", "Unknown")
 one_hot = one_hot_encode(data)
 
 ## Train test split
-train, test = train_test_split(one_hot, stratify_col="stroke", stratify=True)
+train, test = train_test_split(
+    one_hot, stratify_col="stroke", stratify=True, random_state=seed
+)
 X_train = train.iloc[:, :-1]
 y_train = train.iloc[:, -1]
 X_test = test.iloc[:, :-1]
 y_test = test.iloc[:, -1]
 
 ## Build Classifier
-clf = DecisionTreeClassifier()
+clf = DecisionTreeClassifier(random_state=seed)
 clf.fit(X_train, y_train)
-y_pred = clf.predict(X_test)
+
 
 ## Accuracy
+y_pred = clf.predict(X_test)
 acc = sum(y_test == y_pred) / len(y_pred)
 print(f"Accuracy: {round(acc * 100, 4)}%")
+
+## AUCPR
+y_prob = clf.predict_proba(X_test)[:, 1]
+aucpr_score = average_precision_score(y_test, y_prob)
+print(f"AUCPR: {round(aucpr_score * 100, 4)}%")
 
 ##
 ## We need to impute 201 missing values in the bmi column and 1544 missing values in the smoking_status column.
