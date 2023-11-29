@@ -1,12 +1,14 @@
 import pandas as pd
 from sklearn.metrics import average_precision_score
+from sklearn.metrics import make_scorer
+from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 
 from utils.data_processing import one_hot_encode
 from utils.data_processing import train_test_split
 from utils.imputation import mode_impute
 
-seed = 42
+seed = 50
 
 ## Read data
 data = pd.read_csv("data/stroke.csv", delimiter=",")
@@ -29,17 +31,34 @@ y_test = test.iloc[:, -1]
 clf = DecisionTreeClassifier(random_state=seed)
 clf.fit(X_train, y_train)
 
+# Grid search aucpr
+clf_auc_cv = DecisionTreeClassifier(random_state=seed)
+aucpr_scorer = make_scorer(average_precision_score, needs_proba=True)
+param_grid = {"max_depth": [1, 2, 3, 4, 5, 10], "min_samples_split": [2, 3, 4, 5, 10]}
+grid_search = GridSearchCV(clf_auc_cv, param_grid, scoring=aucpr_scorer, cv=5)
+grid_search.fit(X_train, y_train)
+
+best_params = grid_search.best_params_
+best_score = grid_search.best_score_
+
+clf_auc = DecisionTreeClassifier(
+    max_depth=best_params["max_depth"],
+    min_samples_split=best_params["min_samples_split"],
+)
+clf_auc.fit(X_train, y_train)
 
 ## Accuracy
 y_pred = clf.predict(X_test)
+y_pred_auc = clf_auc.predict(X_test)
 acc = sum(y_test == y_pred) / len(y_pred)
-print(f"Accuracy: {round(acc * 100, 4)}%")
+acc_auc = sum(y_test == y_pred_auc) / len(y_pred_auc)
+print(f"Accuracy standard DT: {round(acc * 100, 4)}%")
+print(f"Accuracy aucpr DT: {round(acc_auc * 100, 4)}%")
 
 ## AUCPR
 y_prob = clf.predict_proba(X_test)[:, 1]
+y_prob_auc = clf_auc.predict_proba(X_test)[:, 1]
 aucpr_score = average_precision_score(y_test, y_prob)
-print(f"AUCPR: {round(aucpr_score * 100, 4)}%")
-
-##
-## We need to impute 201 missing values in the bmi column and 1544 missing values in the smoking_status column.
-## You may want to consider whether to one hot encode categorical columns with k or k-1 dummies, leave them as they are, numericalize them, or drop them altogether.
+aucpr_score_auc = average_precision_score(y_test, y_prob_auc)
+print(f"AUCPR standard DT: {round(aucpr_score * 100, 4)}%")
+print(f"AUCPR aucpr DT: {round(aucpr_score_auc * 100, 4)}%")
