@@ -7,6 +7,7 @@ from sklearn.metrics import make_scorer
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 
+from log.log import get_stroke_logger
 from utils.data_processing import one_hot_encode
 from utils.data_processing import read_data
 from utils.data_processing import train_test_split
@@ -18,9 +19,12 @@ from utils.metrics import f1
 from utils.metrics import precision
 from utils.metrics import recall
 
+# set up loggerging
+logger = get_stroke_logger()
+
 # Set random seed
 seed = np.random.randint(0, 10000)
-print(f"random seed: {seed}")
+logger.info(f"random seed: {seed}")
 
 # Read data
 
@@ -95,7 +99,7 @@ def main(path: str):
     decison_tree = make_model(
         DecisionTreeClassifier, X_train, y_train, random_state=seed
     )
-    decison_tree_search_params = grid_search(
+    decison_tree_search = grid_search(
         DecisionTreeClassifier,
         X_train,
         y_train,
@@ -105,21 +109,15 @@ def main(path: str):
         },
         random_state=seed,
     )
-    decison_tree_search = make_model(
-        DecisionTreeClassifier,
-        X_train,
-        y_train,
-        **decison_tree_search_params.best_params_,
-    )
 
     decison_tree_metrics = evaluate(decison_tree, X_test, y_test)
     decison_tree_search_metrics = evaluate(decison_tree_search, X_test, y_test)
 
     for key, value in decison_tree_metrics.items():
-        print(f"Decision Tree {key}: {round(value, 4)}")
+        logger.info(f"Decision Tree {key}: {round(value, 4)}")
 
     for key, value in decison_tree_search_metrics.items():
-        print(f"Decision Tree Search {key}: {round(value, 4)}")
+        logger.info(f"Decision Tree Search {key}: {round(value, 4)}")
 
 
 if __name__ == "__main__":
