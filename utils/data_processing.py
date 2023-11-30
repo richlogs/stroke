@@ -64,3 +64,7 @@ def train_test_split(
     train = train.sample(frac=1, random_state=random_state).reset_index(drop=True)
     test = test.sample(frac=1, random_state=random_state).reset_index(drop=True)
     return train, test
+
+
+def read_data(path: str) -> pd.DataFrame:
+    return pd.read_csv(path, delimiter=",")
