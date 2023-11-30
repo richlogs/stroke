@@ -74,7 +74,7 @@ def grid_search(
     return grid_search
 
 
-def evaluate(model, X_test: pd.DataFrame, y_test: pd.Series):
+def evaluate(model, X_test: pd.DataFrame, y_test: pd.Series) -> dict:
     result_dict = {
         "accuracy": accuracy(y_test, model.predict(X_test)),
         "aucpr": aucpr(y_test, model.predict_proba(X_test)[:, 1]),
